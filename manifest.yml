@@ -6,5 +6,5 @@ applications:
       description: Node.js Application
       memory: 128M
     name: node
-  name: trissues
+  name: trissues-spring-ide
   memory: 128M
