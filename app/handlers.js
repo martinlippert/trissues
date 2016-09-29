@@ -1,5 +1,5 @@
 var restify = require("restify"),
-    config = require("environmental").config(),
+    config = require("environmental").config().trissues,
     xml = require("xml"),
     Promise = require("bluebird"),
     helpers = require("./helpers"),

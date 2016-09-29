@@ -1,4 +1,4 @@
-var config = require("environmental").config(),
+var config = require("environmental").config().trissues,
     restify = require("restify"),
     helpers = require("./helpers"),
     handlers = require("./handlers");
