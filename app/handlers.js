@@ -92,8 +92,19 @@ module.exports = {
   fromtracker: function (req, res, next) {
     helpers.log("POST request to /fromtracker");
 
-    var ipAddress = req.header("x-forwarded-for") || req.connection.remoteAddress;
-    if (trackerIps.indexOf(ipAddress) === -1) {
+    var header = req.header("x-forwarded-for") || req.connection.remoteAddress;
+    var ipAddresses = header.split(/\s*,\s*/);
+
+    var validAddress = false;
+
+    ipAddresses.forEach(function(ipAddress) {
+      var trimmedAddress = ipAddress.replace(" ", "");
+      if (trackerIps.indexOf(trimmedAddress) > -1) {
+        validAddress = true;
+      }
+    });
+
+    if (!validAddress) {
       helpers.log("    WARNING:  request from unknown IP address " + ipAddress + ", responding with 403");
       res.send(403);
       return next();
