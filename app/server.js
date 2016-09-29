@@ -4,7 +4,7 @@ var config = require("environmental").config(),
     handlers = require("./handlers");
 
 function launch() {
-  var port =  process.env.VCAP_APP_PORT || config.server.port || 8001,
+  var port =  process.env.PORT || config.server.port || 8001,
       server = restify.createServer({
         name: "trissues",
         version: "0.0.0",
