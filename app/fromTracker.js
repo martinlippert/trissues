@@ -60,7 +60,16 @@ fromTracker = {
           newLabelNames.push(labelToAdd);
 
           helpers.log("    original Issue labels were " + labelNames + ", changing to " + newLabelNames);
-          issue.update({ labels: newLabelNames }, function (error) {
+          var update = { labels: newLabelNames };
+
+          if (changeHash.original_values.current_state !== "accepted" && changeHash.new_values.current_state === "accepted") {
+            update.state = "closed";
+          }
+          else if (changeHash.original_values.current_state === "accepted" && changeHash.new_values.current_state !== "accepted") {
+            update.state = "open";
+          }
+
+          issue.update(update, function (error) {
             if (error) {
               helpers.log("    update to GitHub " + (error === null ? "succeeded" : "failed"));
               helpers.log(" -- ERROR RESPONSE from GitHub --");
