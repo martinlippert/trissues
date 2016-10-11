@@ -17,7 +17,7 @@ fromTracker = {
   },
 
   isStoryWithStateChange: function (promises, changeHash) {
-    return changeHash.kind === "story" &&
+    return changeHash.kind === "story" && changeHash.new_values && changeHash.original_values &&
         (changeHash.new_values.current_state || changeHash.original_values.current_state);
   },
 
