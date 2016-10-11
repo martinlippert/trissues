@@ -120,7 +120,7 @@ fromTracker = {
 
         if (changeHash.change_type === "create") {
 
-          if (changeHash.new_values.text.startsWith("(comment in GitHub ")) {
+          if (changeHash.new_values.text.indexOf("(comment in GitHub ") === 0) {
             helpers.log("    skipping; comment already created in GitHub");
             wereDonePromise.resolve();
             return;

@@ -128,7 +128,7 @@ fromGitHub = {
 
       if (webhook.action === "created") {
 
-        if (comment.body.startsWith("(comment in Pivotal Tracker ")) {
+        if (comment.body.indexOf("(comment in Pivotal Tracker ") === 0) {
           helpers.log("    skipping; comment already created in tracker");
           wereDonePromise.resolve();
           return;
