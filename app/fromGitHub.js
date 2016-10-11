@@ -23,6 +23,10 @@ fromGitHub = {
     return webhook && (webhook.action === "labeled" || webhook.action === "unlabeled");
   },
 
+  isIssueComment: function (webhook) {
+    return webhook && webhook.comment && (webhook.action === "created");
+  },
+
   updateStoryLabelsInTracker: function (webhook) {
     var action = (webhook.action === "labeled") ? "added" : "removed",
         direction = (webhook.action === "labeled") ? "to" : "from",
@@ -92,7 +96,60 @@ fromGitHub = {
     });
 
     return wereDonePromise;
+  },
+
+  updateCommentsInTracker: function (webhook) {
+    var comment = webhook.comment,
+        issueId = webhook.issue.number;
+
+    helpers.log("    " + webhook.action + " comment '" + comment.body + "' to GitHub Issue #" + issueId);
+
+    var qualifiedProject = tracker.project(config.tracker.projectid),
+        searcher = Promise.promisify(qualifiedProject.search, qualifiedProject),
+        projectSearchPromise = searcher("external_id:" + issueId + " includedone:true"),
+        wereDonePromise = helpers.emptyPromise();
+
+    projectSearchPromise.then(function (result) {
+      var storyHash = result.stories[0];
+      if (!storyHash || !storyHash.id) {
+        helpers.log("    skipping; can't find matching story in Tracker");
+        wereDonePromise.resolve();
+        return;
+      }
+
+      var storyId = storyHash.id;
+      helpers.log("    for GH issue " + issueId + ", the Tracker story is #" + storyId);
+
+      var qualifiedStory =
+              tracker.project(config.tracker.projectid).story(storyId),
+          comments = qualifiedStory.comments,
+          updater = Promise.promisify(comments.create, comments),
+          newComment;
+
+      if (webhook.action === "created") {
+
+        if (comment.body.startsWith("(comment in Pivotal Tracker ")) {
+          helpers.log("    skipping; comment already created in tracker");
+          wereDonePromise.resolve();
+          return;
+        }
+
+        newComment = {
+          text: "(comment in GitHub added by " + comment.user.login + ":) \n\n" + comment.body
+        };
+
+        helpers.log("    adding new comment to Tracker story #" + storyId);
+        wereDonePromise.resolve(updater(newComment));
+      } else {
+        throw new Error("Internal error:  processing comment add/remove, but action was " + webhook.action);
+      }
+    }).catch(function (e) {
+      helpers.log(e);
+    });
+
+    return wereDonePromise;
   }
+
 };
 
 module.exports = fromGitHub;

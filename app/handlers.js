@@ -86,6 +86,10 @@ module.exports = {
       var p = fromGitHub.updateStoryLabelsInTracker(webhook);
       promises.push(p);
     }
+    else if (fromGitHub.isIssueComment(webhook)) {
+      var p = fromGitHub.updateCommentsInTracker(webhook);
+      promises.push(p);
+    }
     finishRequest(promises, res, next);
   },
 
@@ -119,6 +123,10 @@ module.exports = {
       if (fromTracker.isStoryWithStateChange(promises, changeHash)) {
         helpers.log("    state change to story " + changeHash.id);
         fromTracker.updateStateLabelsInGitHub(promises, activity, changeHash);
+      }
+      else if (fromTracker.isStoryWithCommentChange(promises, changeHash)) {
+        helpers.log ("    comment change to story " + changeHash.id);
+        fromTracker.updateCommentsInGitHub(promises, activity, changeHash);
       }
     });
 
