@@ -9,7 +9,7 @@ var restify = require("restify"),
     trackerIps = [
       "67.214.223.6", "67.214.223.25", "208.85.150.190", "208.85.150.184",
       "67.214.223.7", "67.214.223.21", "208.85.150.188", "208.85.150.177",
-      "52.42.106.210"
+      "52.42.106.210", "52.89.159.192", "52.88.182.158"
     ];
 
 function finishRequest(promises, res, next) {
@@ -110,7 +110,7 @@ module.exports = {
     });
 
     if (!validAddress) {
-      helpers.log("    WARNING:  request from unknown IP address " + ipAddress + ", responding with 403");
+      helpers.log("    WARNING:  request from unknown IP address " + header + ", responding with 403");
       res.send(403);
       return next();
     }
