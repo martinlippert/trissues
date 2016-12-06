@@ -21,8 +21,8 @@ fromTracker = {
         (changeHash.new_values.current_state || changeHash.original_values.current_state);
   },
 
-  isStoryWithCommentChange: function (promises, changeHash) {
-    return changeHash.kind === "comment";
+  isStoryWithCommentCreate: function (promises, changeHash) {
+    return changeHash.kind === "comment" && changeHash.change_type === "create";
   },
 
   updateStateLabelsInGitHub: function (promises, activity, changeHash) {
@@ -89,7 +89,7 @@ fromTracker = {
         });
   },
 
-  updateCommentsInGitHub: function (promises, activity, changeHash) {
+  createCommentInGitHub: function (promises, activity, changeHash) {
     var projectId = activity.project.id,
       user = activity.performed_by,
       storyId = changeHash.new_values.story_id,
@@ -118,34 +118,25 @@ fromTracker = {
       .then(function (issues) {
         helpers.log("   Matching GitHub issue received");
 
-        if (changeHash.change_type === "create") {
+        if (changeHash.new_values.text.indexOf("(comment in GitHub ") === 0) {
+          helpers.log("    skipping; comment already created in GitHub");
+          wereDonePromise.resolve();
+          return;
+        }
 
-          if (changeHash.new_values.text.indexOf("(comment in GitHub ") === 0) {
-            helpers.log("    skipping; comment already created in GitHub");
-            wereDonePromise.resolve();
-            return;
+        var newComment = {
+          "body": "(comment in Pivotal Tracker added by " + user.name + ":) \n\n" + changeHash.new_values.text
+        };
+
+        // create new comment
+        issue.createComment(newComment, function (error) {
+          if (error) {
+            helpers.log("    comment creation on GitHub " + (error === null ? "succeeded" : "failed"));
+            helpers.log(" -- ERROR RESPONSE from GitHub --");
+            helpers.log(error);
           }
-
-          var newComment = {
-            "body": "(comment in Pivotal Tracker added by " + user.name + ":) \n\n" + changeHash.new_values.text
-          };
-
-          // create new comment
-          issue.createComment(newComment, function (error) {
-            if (error) {
-              helpers.log("    comment creation on GitHub " + (error === null ? "succeeded" : "failed"));
-              helpers.log(" -- ERROR RESPONSE from GitHub --");
-              helpers.log(error);
-            }
-            wereDonePromise.resolve();
-          });
-        }
-        else if (changeHash.change_type === "delete") {
-          helpers.log("   deleting comments in GitHub not yet supported");
-        }
-        else if (changeHash.change_type === "changed") {
-          helpers.log("   changing comments in GitHub not yet supported");
-        }
+          wereDonePromise.resolve();
+        });
       })
       .catch(function (error) {
         helpers.log(" -- CAUGHT EXCEPTION -- ");

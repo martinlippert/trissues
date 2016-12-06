@@ -125,9 +125,9 @@ module.exports = {
         helpers.log("    state change to story " + changeHash.id);
         fromTracker.updateStateLabelsInGitHub(promises, activity, changeHash);
       }
-      else if (fromTracker.isStoryWithCommentChange(promises, changeHash)) {
-        helpers.log ("    comment change to story " + changeHash.id);
-        fromTracker.updateCommentsInGitHub(promises, activity, changeHash);
+      else if (fromTracker.isStoryWithCommentCreate(promises, changeHash)) {
+        helpers.log ("    create comment to story " + changeHash.id);
+        fromTracker.createCommentInGitHub(promises, activity, changeHash);
       }
     });
 
