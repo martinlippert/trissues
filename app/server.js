@@ -1,19 +1,15 @@
 var config = require("environmental").config().trissues,
-    restify = require("restify"),
-    helpers = require("./helpers"),
-    handlers = require("./handlers");
+  restify = require("restify"),
+  helpers = require("./helpers"),
+  handlers = require("./handlers");
 
 function launch() {
-  var port =  process.env.PORT || config.server.port || 8001,
-      server = restify.createServer({
-        name: "trissues",
-        version: "0.0.0",
-        formatters: {
-          "application/xml": function (req, res, body) {
-            return body;
-          }
-        }
-      });
+  //  var port =  process.env.PORT || config.server.port || 8001,
+  var port = process.env.PORT || 8001,
+    server = restify.createServer({
+      name: "trissues",
+      version: "0.0.0"
+    });
 
   server.use(restify.bodyParser());
   server.get("/githubissues", handlers.githubissues);
