@@ -13,17 +13,17 @@
   "licenses": "MIT",
   "main": "index",
   "scripts": {
-    "start": "/usr/bin/env bash -c 'source envs/production.sh ; node index'",
-    "dev": "/usr/bin/env bash -c 'source envs/development.sh ; node index'",
+    "start": "node index.js",
+    "dev": "/usr/bin/env bash -c 'node index'",
     "test":  "grunt"
   },
   "engines": {
-    "node": "6.9.1",
+    "node": "6.11.2",
     "npm": "3.10.0"
   },
   "dependencies": {
     "bluebird": "^2.9.12",
-    "environmental": "^1.2.0",
+    "environmental": "1.2.3",
     "lodash": "^3.1.0",
     "octonode": "^0.6.14",
     "pivotaltracker": "git://github.com/gleneivey/pivotaltracker.git",
