@@ -8,3 +8,11 @@ applications:
     name: node
   name: trissues-spring-ide
   memory: 128M
+- instances: 1
+  framework:
+    info:
+      description: Node.js Application
+      memory: 128M
+    name: node
+  name: trissues-sts4
+  memory: 128M
